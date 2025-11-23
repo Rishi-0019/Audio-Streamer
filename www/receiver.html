@@ -1,551 +1,416 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>LAN Audio Streamer — Receiver</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root{
+      --bg1: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+      --card-bg: #ffffff;
+      --muted: #54607a;
+      --accent: #667eea;
+      --success: #28a745;
+      --danger: #dc3545;
+      --glass: rgba(255,255,255,0.06);
+      --radius: 12px;
     }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 20px;
-      color: #333;
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      background: var(--bg1);
+      color: #102028;
+      min-height:100vh;
+      padding:20px;
+      -webkit-font-smoothing:antialiased;
     }
-    
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
+    .container{max-width:900px;margin:0 auto;}
+    header{text-align:center;color:white;margin-bottom:22px}
+    header h1{font-size:28px;margin-bottom:4px}
+    header p{opacity:0.95}
+
+    .card{
+      background:var(--card-bg);
+      border-radius:var(--radius);
+      padding:22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+      margin-bottom:18px;
     }
-    
-    .header {
-      text-align: center;
-      color: white;
-      margin-bottom: 30px;
+
+    .info-box{background:#e7f3ff;border-left:4px solid #2196F3;padding:12px;border-radius:8px;color:#0d47a1;margin-bottom:12px}
+
+    .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:8px}
+    .btn{padding:12px 18px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),#7b61ff);color:#fff}
+    .btn-danger{background:linear-gradient(90deg,#f093fb,#f5576c);color:#fff}
+    .btn-ghost{background:transparent;border:1px solid rgba(0,0,0,0.06);color:inherit}
+
+    .status {
+      display:inline-flex;align-items:center;gap:10px;padding:10px 16px;border-radius:999px;font-weight:700;
     }
-    
-    .header h1 {
-      font-size: 2.5em;
-      margin-bottom: 10px;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    .status-disconnected{background:var(--danger);color:#fff}
+    .status-connecting{background:#ffd966;color:#3b2f00}
+    .status-connected{background:var(--success);color:#fff}
+
+    .audio-box{margin-top:20px;text-align:center;padding:18px;background:linear-gradient(180deg,#f8fbff,#eef6ff);border-radius:10px}
+    audio{width:100%;max-width:640px;border-radius:8px;outline:none}
+
+    .small{font-size:13px;color:var(--muted)}
+    .helper{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:12px}
+
+    .manual-panel{display:none;margin-top:12px;gap:8px;align-items:center}
+    .input{
+      padding:10px 12px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);flex:1;font-size:14px
     }
-    
-    .header p {
-      font-size: 1.1em;
-      opacity: 0.9;
-    }
-    
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 30px;
-      margin-bottom: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-    
-    .btn {
-      padding: 14px 28px;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      margin: 5px;
-    }
-    
-    .btn-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-    }
-    
-    .btn-primary:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-    }
-    
-    .btn-primary:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-    
-    .btn-danger {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      color: white;
-      box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
-    }
-    
-    .btn-danger:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
-    }
-    
-    .btn-danger:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-    
-    .controls {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin: 25px 0;
-    }
-    
-    .status-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 20px;
-      border-radius: 25px;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    
-    .status-connected {
-      background: #28a745;
-      color: white;
-    }
-    
-    .status-disconnected {
-      background: #dc3545;
-      color: white;
-    }
-    
-    .status-connecting {
-      background: #ffc107;
-      color: #333;
-    }
-    
-    .audio-player-container {
-      margin: 30px 0;
-      padding: 25px;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      border-radius: 12px;
-      text-align: center;
-    }
-    
-    .audio-player-container h3 {
-      color: #667eea;
-      margin-bottom: 15px;
-      font-size: 1.5em;
-    }
-    
-    audio {
-      width: 100%;
-      max-width: 500px;
-      margin: 15px auto;
-      border-radius: 8px;
-    }
-    
-    .info-box {
-      background: #e7f3ff;
-      border-left: 4px solid #2196F3;
-      padding: 15px;
-      border-radius: 8px;
-      margin: 20px 0;
-      color: #0d47a1;
-    }
-    
-    .log-container {
-      background: #1e1e1e;
-      color: #d4d4d4;
-      padding: 20px;
-      border-radius: 12px;
-      max-height: 300px;
-      overflow-y: auto;
-      font-family: 'Courier New', monospace;
-      font-size: 13px;
-      line-height: 1.6;
-      margin-top: 20px;
-    }
-    
-    .log-container::-webkit-scrollbar {
-      width: 8px;
-    }
-    
-    .log-container::-webkit-scrollbar-track {
-      background: #2d2d2d;
-    }
-    
-    .log-container::-webkit-scrollbar-thumb {
-      background: #555;
-      border-radius: 4px;
-    }
-    
-    @media (max-width: 768px) {
-      .header h1 {
-        font-size: 2em;
-      }
-      
-      .card {
-        padding: 20px;
-      }
-      
-      .btn {
-        width: 100%;
-        margin: 5px 0;
-      }
+
+    .toast{position:fixed;right:18px;bottom:18px;background:rgba(15,23,36,0.95);color:#e6f0ff;padding:10px 14px;border-radius:8px;box-shadow:0 12px 30px rgba(0,0,0,0.4);z-index:9999}
+    @media (max-width:720px){
+      .controls{flex-direction:column}
+      .helper{flex-direction:column}
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="header">
-      <h1>🎧 Audio Receiver</h1>
-      <p>Listen to audio streamed from your network</p>
-    </div>
+    <header>
+      <h1>🎧 LAN Audio — Receiver</h1>
+      <p>Open the receiver link (or scan the QR) on this device and press <strong>Join Stream</strong>.</p>
+    </header>
 
-    <div class="card">
-      <h2 style="color: #667eea; margin-bottom: 20px; text-align: center;">🎵 Stream Controls</h2>
-      
+    <div class="card" role="main" aria-live="polite">
       <div class="info-box">
-        <strong>ℹ️ Instructions:</strong> Click "Join Stream" below to connect to the audio stream. Make sure the sender has started streaming first!
+        <strong>ℹ️ Instructions:</strong> Ask the sender to <em>Start Streaming</em>. Then press <strong>Join Stream</strong> here. If this page was opened via the QR/direct link, signaling will be detected automatically.
       </div>
-      
-      <div class="controls">
-        <button id="joinBtn" class="btn btn-primary">▶️ Join Stream</button>
-        <button id="leaveBtn" class="btn btn-danger" disabled>⏹️ Leave Stream</button>
-        <span id="status" class="status-indicator status-disconnected">🔴 Not Connected</span>
-      </div>
-      
-      <div id="audioContainer" class="audio-player-container" style="display: none;">
-        <h3>🎵 Now Playing</h3>
-        <audio id="audioPlayer" controls autoplay></audio>
-        <p style="color: #666; margin-top: 10px; font-size: 14px;">Audio stream is playing</p>
-      </div>
-    </div>
 
-    <div class="card">
-      <h3 style="color: #667eea; margin-bottom: 15px;">📋 Connection Log</h3>
-      <div id="log" class="log-container"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div style="font-weight:800">Stream Controls</div>
+        <div id="status" class="status status-disconnected">🔴 Not connected</div>
+      </div>
+
+      <div class="controls" style="margin-top:14px">
+        <button id="joinBtn" class="btn btn-primary" aria-label="Join stream">▶ Join Stream</button>
+        <button id="leaveBtn" class="btn btn-danger" aria-label="Leave stream" disabled>⏹ Leave Stream</button>
+        <button id="toggleManualBtn" class="btn btn-ghost" aria-label="Manual host">Host / Troubleshoot</button>
+      </div>
+
+      <div class="manual-panel" id="manualPanel">
+        <input id="manualHost" class="input" placeholder="Manual signaling host (e.g. http://192.168.1.2:8000)" aria-label="Manual host">
+        <button id="applyHostBtn" class="btn btn-ghost">Apply</button>
+      </div>
+
+      <div id="audioContainer" class="audio-box" style="display:none">
+        <h3 style="color:#667eea;margin:6px 0">🎵 Now Playing</h3>
+        <audio id="audioPlayer" controls autoplay></audio>
+        <p class="small" style="margin-top:8px">If audio is silent, check that the sender selected "Share audio" and started streaming.</p>
+      </div>
     </div>
   </div>
 
+  <div id="toast" class="toast" style="display:none"></div>
+
 <script>
-const logEl = document.getElementById('log');
-function log(...args){ 
-  console.log(...args); 
-  const timestamp = new Date().toLocaleTimeString();
-  logEl.innerHTML += `<span style="color: #858585;">[${timestamp}]</span> ` + args.join(' ') + '\n'; 
-  logEl.scrollTop = logEl.scrollHeight;
-}
+/* Improved receiver.html
+ - No verbose log panel
+ - Auto-detect signaling URL:
+    1) If URL contains ?host=... use that
+    2) Else use window.location.host (works when opened from discover or direct IP)
+    3) Fallback to ws://localhost:8000/ws
+ - Manual host input if auto-detect fails
+ - Robust handling of offer/answer and ICE
+*/
+
+const statusEl = document.getElementById('status');
+const joinBtn = document.getElementById('joinBtn');
+const leaveBtn = document.getElementById('leaveBtn');
+const toggleManualBtn = document.getElementById('toggleManualBtn');
+const manualPanel = document.getElementById('manualPanel');
+const manualHostInput = document.getElementById('manualHost');
+const applyHostBtn = document.getElementById('applyHostBtn');
+const audioContainer = document.getElementById('audioContainer');
+const audioPlayer = document.getElementById('audioPlayer');
+const toastEl = document.getElementById('toast');
 
 let pc = null;
 let ws = null;
-let signalingUrl = (() => {
-  // If opened via HTTP/HTTPS, use the current host
-  if (location.hostname && location.hostname !== '127.0.0.1' && location.hostname !== 'localhost') {
-    // Accessing from network IP
-    const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const port = location.port ? (':' + location.port) : '';
-    const url = `${proto}//${location.hostname}${port}/ws`;
-    log('🌐 Using network WebSocket URL:', url);
-    return url;
-  }
-  // If opened via localhost/127.0.0.1 or file://, use localhost:8000
-  const url = 'ws://localhost:8000/ws';
-  log('🏠 Using localhost WebSocket URL:', url);
-  return url;
-})();
+let signalingUrl = null;
 
-if (!signalingUrl) {
-  log('❌ No signaling URL available. Make sure the server is running.');
-  alert('Unable to determine WebSocket URL. Please access this page via HTTP (http://localhost:8000/receiver.html) or ensure the server is running.');
+// small helper
+function showToast(msg, ttl=3000){
+  toastEl.textContent = msg;
+  toastEl.style.display = 'block';
+  setTimeout(()=> {
+    toastEl.style.opacity = '0.01';
+  }, ttl - 240);
+  setTimeout(()=> {
+    toastEl.style.display = 'none';
+    toastEl.style.opacity = '';
+  }, ttl);
 }
 
-function updateStatus(status) {
-  const statusEl = document.getElementById('status');
-  if (status === 'connected') {
-    statusEl.textContent = '🟢 Connected';
-    statusEl.className = 'status-indicator status-connected';
-  } else if (status === 'connecting') {
+function updateStatus(s){
+  if(s === 'connecting'){
+    statusEl.className = 'status status-connecting';
     statusEl.textContent = '🟡 Connecting...';
-    statusEl.className = 'status-indicator status-connecting';
+  } else if (s === 'connected'){
+    statusEl.className = 'status status-connected';
+    statusEl.textContent = '🟢 Connected';
   } else {
-    statusEl.textContent = '🔴 Not Connected';
-    statusEl.className = 'status-indicator status-disconnected';
+    statusEl.className = 'status status-disconnected';
+    statusEl.textContent = '🔴 Not connected';
   }
 }
 
-function makeWS(onOpen) {
-  if (!signalingUrl) {
-    log('❌ No signaling URL available');
+// Try to determine signaling URL
+function detectSignalingUrl(){
+  // 1) ?host=https://...
+  try {
+    const params = new URLSearchParams(location.search);
+    const hostParam = params.get('host');
+    if(hostParam){
+      // allow either ws:// or http(s) input
+      if(hostParam.startsWith('ws://') || hostParam.startsWith('wss://')) return hostParam;
+      if(hostParam.startsWith('http://') || hostParam.startsWith('https://')){
+        return (hostParam.startsWith('https://') ? 'wss://' : 'ws://') + hostParam.replace(/^https?:\/\//, '') + '/ws';
+      }
+      // bare host like 192.168.1.2:8000
+      return 'ws://' + hostParam.replace(/\/+$/,'') + '/ws';
+    }
+  } catch(e){}
+
+  // 2) use page host if loaded over HTTP(S)
+  try {
+    if(location.protocol.startsWith('http') && location.host){
+      const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+      return proto + '//' + location.host + '/ws';
+    }
+  } catch(e){}
+
+  // 3) fallback to localhost
+  return 'ws://localhost:8000/ws';
+}
+
+function setSignalingFromManual(val){
+  if(!val) return;
+  // Accept http(s) or ws or bare host
+  let s = val.trim();
+  if(s.startsWith('http://') || s.startsWith('https://')){
+    s = (s.startsWith('https://') ? 'wss://' : 'ws://') + s.replace(/^https?:\/\//, '').replace(/\/+$/, '') + '/ws';
+  } else if(s.startsWith('ws://') || s.startsWith('wss://')){
+    // ok
+  } else {
+    // host only
+    s = 'ws://' + s.replace(/\/+$/, '') + '/ws';
+  }
+  signalingUrl = s;
+  showToast('Signaling set: ' + signalingUrl, 2500);
+  updateSignalingUI();
+}
+
+function updateSignalingUI(){
+  // small hint via title attribute
+  // (no visible logs)
+  joinBtn.title = 'Join using ' + signalingUrl;
+}
+
+// create websocket
+function makeWS(onOpen){
+  if(!signalingUrl){
+    showToast('No signaling URL');
     return null;
   }
-  
-  log('🔌 Attempting to connect to WebSocket:', signalingUrl);
-  const s = new WebSocket(signalingUrl);
-  
-  // Set connection timeout
+  let socket;
+  try{
+    socket = new WebSocket(signalingUrl);
+  } catch(e){
+    showToast('WebSocket creation failed: ' + e.message, 4000);
+    return null;
+  }
+
   const connectTimeout = setTimeout(() => {
-    if (s.readyState === WebSocket.CONNECTING) {
-      log('⏱️ WebSocket connection timeout. Is the server running?');
-      s.close();
+    if(socket && socket.readyState === WebSocket.CONNECTING){
+      socket.close();
+      showToast('WebSocket connection timed out');
+      updateStatus('disconnected');
+      joinBtn.disabled = false;
+      leaveBtn.disabled = true;
     }
-  }, 10000); // 10 second timeout
-  
-  s.onopen = () => { 
+  }, 9000);
+
+  socket.onopen = () => {
     clearTimeout(connectTimeout);
-    log('✅ WebSocket connected successfully'); 
-    if (onOpen) onOpen(); 
+    if(onOpen) onOpen();
   };
-  
-  s.onmessage = async (evt) => {
-    // Skip non-JSON messages (like binary or plain text)
-    if (typeof evt.data !== 'string') return;
-    
+
+  socket.onmessage = async (evt) => {
+    if(typeof evt.data !== 'string') return;
     try {
       const data = JSON.parse(evt.data);
-      
-      if (data.type === 'offer') {
-        if (!pc) {
-          log('⚠️ Received offer but PC not initialized yet');
+      if(data.type === 'offer'){
+        if(!pc){
+          console.warn('Offer received but PC missing');
           return;
         }
-        log('✅ Received offer from sender; creating answer...');
+        updateStatus('connecting');
+        await pc.setRemoteDescription({ type:'offer', sdp: data.sdp });
+        const answer = await pc.createAnswer();
+        let sdp = answer.sdp || '';
+        if(sdp.includes('opus')){
+          sdp = sdp.replace(/a=rtpmap:(\d+) opus\/48000\/2/g, 'a=rtpmap:$1 opus/48000/2\r\na=fmtp:$1 minptime=10;useinbandfec=1;stereo=1;maxaveragebitrate=510000');
+        }
+        await pc.setLocalDescription({ type: answer.type, sdp });
         try {
-          await pc.setRemoteDescription({ type: 'offer', sdp: data.sdp });
-          const answer = await pc.createAnswer();
-          
-          // Modify answer SDP for high quality audio
-          let modifiedSdp = answer.sdp;
-          if (modifiedSdp.includes('opus')) {
-            // Ensure Opus codec has high bitrate settings
-            modifiedSdp = modifiedSdp.replace(
-              /a=rtpmap:(\d+) opus\/48000\/2/g,
-              'a=rtpmap:$1 opus/48000/2\r\na=fmtp:$1 minptime=10;useinbandfec=1;stereo=1;maxaveragebitrate=510000'
-            );
-          }
-          
-          const modifiedAnswer = {
-            type: answer.type,
-            sdp: modifiedSdp
-          };
-          
-          await pc.setLocalDescription(modifiedAnswer);
-          s.send(JSON.stringify({ type: 'answer', sdp: pc.localDescription.sdp, id: data.id || null }));
-          log('✅ Sent high-quality answer to sender');
-        } catch (e) {
-          log('❌ Error handling offer:', e.message);
-          console.error(e);
+          socket.send(JSON.stringify({ type:'answer', sdp: pc.localDescription.sdp, id: data.id || null }));
+        } catch(e){
+          console.warn('Failed to send answer:', e);
         }
-      } else if (data.type === 'ice') {
-        if (pc && data.candidate) {
-          try { 
-            await pc.addIceCandidate(data.candidate); 
-            log('✅ Added remote ICE candidate'); 
-          } catch(e){ 
-            console.warn('ICE candidate error:', e); 
-          }
+      } else if(data.type === 'ice' && data.candidate){
+        if(pc){
+          try{ await pc.addIceCandidate(data.candidate); } catch(e){}
         }
-      } else if (data.type === 'ping') {
-        // ignore ping
-      } else if (data.type === 'pong') {
-        // ignore pong
-      } else if (data.type === 'receiver_joined') {
-        // Sender received notification - can be ignored by receiver
-      } else {
-        log('📨 WS message:', evt.data);
+      } else if(data.type === 'pong' || data.type === 'ok'){
+        // ignore
       }
-    } catch (e) {
-      // Only log if it's actually a JSON parse error, not just any error
-      if (e instanceof SyntaxError) {
-        console.warn('Non-JSON message received:', evt.data);
-      } else {
-        log('❌ WS error:', e.message);
-        console.error(e);
-      }
+    } catch(e){
+      console.warn('WS message parse error', e);
     }
   };
-  s.onclose = (ev) => {
+
+  socket.onclose = (ev) => {
     clearTimeout(connectTimeout);
-    const reason = ev.reason || '';
-    log('🔌 WebSocket closed. Code:', ev.code, reason ? 'Reason: ' + reason : '');
-    
-    // Provide helpful error messages based on close code
-    if (ev.code === 1006) {
-      log('⚠️ Connection closed abnormally (1006). Possible causes:');
-      log('   • Server is not running');
-      log('   • Network/firewall blocking connection');
-      log('   • Incorrect WebSocket URL');
-      log('💡 Make sure the FastAPI server is running on port 8000');
-    } else if (ev.code === 1000) {
-      log('ℹ️ Connection closed normally');
-    } else if (ev.code === 1001) {
-      log('ℹ️ Connection going away');
-    } else if (ev.code === 1002) {
-      log('❌ Protocol error');
-    } else if (ev.code === 1003) {
-      log('❌ Unsupported data type');
-    } else {
-      log('⚠️ Connection closed with code:', ev.code);
-    }
-    
-    document.getElementById('leaveBtn').disabled = true;
-    document.getElementById('joinBtn').disabled = false;
     updateStatus('disconnected');
+    joinBtn.disabled = false;
+    leaveBtn.disabled = true;
+    showToast('Signaling disconnected');
   };
-  
-  s.onerror = (ev) => { 
+
+  socket.onerror = (ev) => {
     clearTimeout(connectTimeout);
-    console.error('WebSocket error:', ev); 
-    log('❌ WebSocket error occurred');
-    log('💡 Check if the server is running: python server_fastapi.py');
-    log('💡 Verify the WebSocket URL:', signalingUrl);
+    showToast('WebSocket error (check server/network)', 2500);
   };
-  
-  return s;
+
+  return socket;
 }
 
-document.getElementById('joinBtn').onclick = async () => {
-  if (!signalingUrl) { 
-    alert('❌ No signaling URL - serve page over HTTP or set fallbackIP.'); 
-    return; 
-  }
-  
-  updateStatus('connecting');
-  
-  // Create RTCPeerConnection with high-quality audio configuration
+// WebRTC connection setup
+function preparePeerConnection(){
   pc = new RTCPeerConnection({
-    iceServers: [
-      { urls: 'stun:stun.l.google.com:19302' }
-    ],
+    iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
     sdpSemantics: 'unified-plan'
   });
 
-  // Handle incoming audio tracks
   pc.ontrack = (e) => {
-    log('🎵 Received track:', e.track.kind);
-    let audio = document.getElementById('audioPlayer');
-    const audioContainer = document.getElementById('audioContainer');
-    
-    if (!audio) {
-      audio = document.createElement('audio');
-      audio.id = 'audioPlayer';
-      audio.autoplay = true;
-      audio.controls = true;
-      audioContainer.appendChild(audio);
+    // prefer streams if provided
+    if(e.streams && e.streams[0]){
+      audioPlayer.srcObject = e.streams[0];
+    } else if(e.track){
+      audioPlayer.srcObject = new MediaStream([e.track]);
     }
-    
-    if (e.streams && e.streams[0]) {
-      audio.srcObject = e.streams[0];
-      audioContainer.style.display = 'block';
-      log('✅ Attached audio stream to audio element');
-      updateStatus('connected');
-    } else if (e.track) {
-      // Fallback: create a stream from the track
-      const stream = new MediaStream([e.track]);
-      audio.srcObject = stream;
-      audioContainer.style.display = 'block';
-      log('✅ Attached track to audio element');
-      updateStatus('connected');
+    audioContainer.style.display = 'block';
+    updateStatus('connected');
+  };
+
+  pc.onicecandidate = (e) => {
+    if(e.candidate && ws && ws.readyState === WebSocket.OPEN){
+      try { ws.send(JSON.stringify({ type:'ice', candidate: e.candidate })); } catch(e){}
     }
   };
 
-  // Send ICE candidates to sender
-  pc.onicecandidate = (e) => {
-    if (e.candidate && ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ type: 'ice', candidate: e.candidate }));
-      log('📤 Sent local ICE candidate');
-    }
-  };
-  
-  // Log connection state changes
   pc.onconnectionstatechange = () => {
-    log('🔗 PC state:', pc.connectionState, 'ICE:', pc.iceConnectionState);
-    if (pc.connectionState === 'connected') {
-      log('🎉 Connected to sender!');
-      updateStatus('connected');
-    } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
-      log('⚠️ Connection failed or disconnected');
+    if(!pc) return;
+    if(pc.connectionState === 'connected') updateStatus('connected');
+    else if(pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
       updateStatus('disconnected');
     }
   };
-  
-  pc.oniceconnectionstatechange = () => {
-    log('🧊 ICE connection state:', pc.iceConnectionState);
-  };
+}
 
-  // Connect WebSocket and send join request
+async function joinStream(){
+  // disable join while connecting
+  joinBtn.disabled = true;
+  updateStatus('connecting');
+  signalingUrl = signalingUrl || detectSignalingUrl();
+  updateSignalingUI();
+
+  // prepare pc
+  preparePeerConnection();
+
+  // open ws
   ws = makeWS(() => {
-    // Send join request so sender will create an offer
+    // immediately send a join so the sender creates an offer
     try {
       ws.send(JSON.stringify({ type: 'join', id: null }));
-      log('✅ Sent join request');
-      log('⏳ Waiting for sender to create offer...');
-      log('💡 Make sure the sender has started streaming!');
-    } catch (e) {
-      log('❌ Error sending join request:', e.message);
+    } catch(e){
+      showToast('Failed to send join: ' + (e.message||e));
     }
   });
-  
-  // If WebSocket fails to connect, provide helpful message
+
+  // safety: if WebSocket fails, re-enable join
   setTimeout(() => {
-    if (ws && ws.readyState === WebSocket.CLOSED) {
-      log('⚠️ WebSocket failed to connect. Troubleshooting:');
-      log('   1. Is the server running? (python server_fastapi.py)');
-      log('   2. Are you accessing via the correct URL?');
-      log('   3. Check firewall settings');
-      log('   4. Try accessing: ' + signalingUrl);
+    if(!ws || ws.readyState === WebSocket.CLOSED){
+      joinBtn.disabled = false;
+      updateStatus('disconnected');
     }
-  }, 2000);
+  }, 3500);
 
-  document.getElementById('joinBtn').disabled = true;
-  document.getElementById('leaveBtn').disabled = false;
-};
+  // UI state
+  leaveBtn.disabled = false;
+}
 
-document.getElementById('leaveBtn').onclick = () => {
-  if (pc) {
-    try { 
-      pc.close(); 
-      log('🔌 Closed RTCPeerConnection');
-    } catch(e) {
-      console.warn('Error closing PC:', e);
-    }
-  }
-  pc = null;
-  
-  if (ws) {
-    try { 
-      ws.close(); 
-      log('🔌 Closed WebSocket');
-    } catch(e) {
-      console.warn('Error closing WS:', e);
-    }
-  }
-  ws = null;
-  
-  // Remove audio element
-  const audio = document.getElementById('audioPlayer');
-  const audioContainer = document.getElementById('audioContainer');
-  if (audio) {
-    audio.srcObject = null;
-  }
-  if (audioContainer) {
-    audioContainer.style.display = 'none';
-  }
-  
-  document.getElementById('leaveBtn').disabled = true;
-  document.getElementById('joinBtn').disabled = false;
+function leaveStream(){
+  if(pc){ try{ pc.close(); } catch(e){} pc = null; }
+  if(ws){ try{ ws.close(); } catch(e){} ws = null; }
+  audioPlayer.srcObject = null;
+  audioContainer.style.display = 'none';
   updateStatus('disconnected');
-  log('⏹️ Left stream');
-};
+  joinBtn.disabled = false;
+  leaveBtn.disabled = true;
+  showToast('Left stream', 1200);
+}
+
+// toggles
+toggleManualBtn.addEventListener('click', () => {
+  manualPanel.style.display = manualPanel.style.display === 'flex' ? 'none' : 'flex';
+  if(manualPanel.style.display === 'flex'){
+    manualPanel.style.flexDirection = 'row';
+  }
+});
+
+applyHostBtn.addEventListener('click', () => {
+  const v = manualHostInput.value.trim();
+  if(!v){ showToast('Enter host'); return; }
+  setSignalingFromManual(v);
+});
+
+joinBtn.addEventListener('click', async () => {
+  try {
+    // If signalingUrl is unknown, detect
+    if(!signalingUrl) signalingUrl = detectSignalingUrl();
+    joinStream();
+  } catch(e){
+    showToast('Join error: ' + (e.message||e));
+    joinBtn.disabled = false;
+    updateStatus('disconnected');
+  }
+});
+
+leaveBtn.addEventListener('click', () => {
+  leaveStream();
+});
+
+// initialize
+(function init(){
+  signalingUrl = detectSignalingUrl();
+  updateSignalingUI();
+  updateStatus('disconnected');
+  // If the page was opened via QR/direct link, signalingUrl will be correct.
+  // show small hint
+  showToast('Ready — press Join Stream', 1800);
+})();
 
 window.addEventListener('beforeunload', () => {
-  if (ws) try { ws.close(); } catch(e){}
-  if (pc) try { pc.close(); } catch(e){}
+  if(ws) try{ ws.close(); } catch(e){}
+  if(pc) try{ pc.close(); } catch(e){}
 });
 </script>
 </body>

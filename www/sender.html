@@ -14,172 +14,56 @@
       --danger:#ff6b72;
       --success:#28c76f;
       --glass: rgba(255,255,255,0.06);
-      --glass-2: rgba(255,255,255,0.04);
       --shadow: 0 12px 30px rgba(2,6,23,0.6);
       --radius:14px;
       --mono: 'Courier New', monospace;
-      --ui-gap:16px;
     }
-
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
       background: linear-gradient(180deg, #0b0f1a 0%, #0f1724 60%);
       color:#e6eef8;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
       padding:28px;
-      line-height:1.35;
     }
 
-    .wrap{
-      max-width:1200px;
-      margin:0 auto;
-      display:grid;
-      grid-template-columns: 420px 1fr;
-      gap:24px;
-      align-items:start;
-    }
-    @media (max-width:960px){
-      .wrap{ grid-template-columns: 1fr; padding-bottom:40px }
-    }
+    .wrap{ max-width:1200px; margin:0 auto; display:grid; grid-template-columns:420px 1fr; gap:24px; align-items:start;}
+    @media (max-width:960px){ .wrap{ grid-template-columns: 1fr; padding-bottom:40px } }
 
-    header{
-      grid-column:1/-1;
-      display:flex;
-      align-items:center;
-      gap:16px;
-      margin-bottom:6px;
-    }
-    header h1{
-      font-size:20px;
-      margin:0;
-      color:var(--card);
-      letter-spacing: -0.2px;
-    }
-    header p{
-      margin:0;
-      color:var(--muted);
-      font-size:13px;
-    }
-
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:var(--radius);
-      padding:20px;
-      box-shadow:var(--shadow);
-      border:1px solid rgba(255,255,255,0.03);
-    }
+    header{ grid-column:1/-1; display:flex; align-items:center; gap:16px; margin-bottom:6px; }
+    header h1{ font-size:20px; margin:0; color:var(--card) }
+    .card{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03); }
 
     .qr-card{ display:flex; flex-direction:column; gap:12px; align-items:center; }
-    .qr-visual{
-      width:100%;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-    }
-    .qr-box{
-      background: linear-gradient(180deg,#f8fafc,#eef2ff);
-      padding:14px;
-      border-radius:12px;
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:center;
-      min-height:220px;
-      width:100%;
-      box-shadow: 0 6px 18px rgba(12,18,40,0.35);
-    }
+    .qr-box{ background: linear-gradient(180deg,#f8fafc,#eef2ff); padding:14px; border-radius:12px; min-height:220px; width:100%; display:flex; align-items:center; justify-content:center; box-shadow: 0 6px 18px rgba(12,18,40,0.35); }
     .qr-box img{ max-width:260px; width:100%; border-radius:8px; border:6px solid #fff; box-shadow:0 10px 30px rgba(0,0,0,0.15) }
     .qr-placeholder{ color:#5a6478; font-size:15px; text-align:center; padding:12px; }
 
     .url-row{ display:flex; gap:8px; width:100%; align-items:center; }
-    .url-text{
-      flex:1;
-      background: rgba(255,255,255,0.03);
-      padding:10px 12px;
-      border-radius:10px;
-      color:var(--card);
-      font-size:13px;
-      word-break:break-all;
-      border:1px dashed rgba(255,255,255,0.03);
-    }
-    .small-btn{
-      background:transparent;
-      color:var(--card);
-      border:1px solid rgba(255,255,255,0.06);
-      padding:8px 10px;
-      border-radius:10px;
-      font-weight:600;
-      cursor:pointer;
-      transition:all .16s ease;
-      font-size:13px;
-    }
-    .small-btn:hover{ transform:translateY(-2px); box-shadow:0 6px 18px rgba(0,0,0,0.35) }
+    .url-text{ flex:1; background: rgba(255,255,255,0.03); padding:10px 12px; border-radius:10px; color:var(--card); font-size:13px; word-break:break-all; border:1px dashed rgba(255,255,255,0.03); }
 
-    .controls-col{ display:flex; flex-direction:column; gap:14px; }
+    .small-btn{ background:transparent; color:var(--card); border:1px solid rgba(255,255,255,0.06); padding:8px 10px; border-radius:10px; font-weight:600; cursor:pointer; transition:all .16s ease; font-size:13px; }
+    .small-btn:hover{ transform:translateY(-2px) }
 
     .status-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
-    .status-pill{
-      padding:10px 14px;
-      border-radius:999px;
-      font-weight:700;
-      font-size:13px;
-      display:inline-flex;
-      gap:8px;
-      align-items:center;
-    }
+    .status-pill{ padding:10px 14px; border-radius:999px; font-weight:700; font-size:13px; display:inline-flex; gap:8px; align-items:center; }
     .status-inactive{ background: rgba(255,255,255,0.04); color:var(--muted) }
     .status-active{ background: linear-gradient(90deg, rgba(40,199,111,0.14), rgba(68,245,150,0.06)); color:var(--success); border:1px solid rgba(40,199,111,0.12) }
 
     .big-actions{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
-    .btn{
-      padding:14px 22px;
-      border-radius:12px;
-      border:none;
-      font-weight:800;
-      cursor:pointer;
-      font-size:15px;
-      letter-spacing:.2px;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.45);
-      transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
-    }
-    .btn:active{ transform:translateY(1px) }
-    .btn:disabled{ opacity:.6; cursor:not-allowed; transform:none; box-shadow:none }
-
+    .btn{ padding:14px 22px; border-radius:12px; border:none; font-weight:800; cursor:pointer; font-size:15px; box-shadow: 0 6px 24px rgba(0,0,0,0.45); }
     .btn-start{ background: linear-gradient(90deg,var(--accent),var(--accent-2)); color:white; }
     .btn-stop{ background: linear-gradient(90deg,#ff7a7a,#ff5660); color:white; }
     .btn-ghost{ background: transparent; border:1px solid rgba(255,255,255,0.06); color:var(--card) }
 
-    .hint{ color:var(--muted); font-size:13px; }
-
-    .controls-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    .controls-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px; }
     .controls-grid .box{ background:var(--glass); padding:12px; border-radius:10px; font-size:13px; color:var(--muted) }
 
-    .settings-row{ display:flex; gap:8px; align-items:center; width:100%; }
-    .input{
-      background: rgba(255,255,255,0.03);
-      border:1px solid rgba(255,255,255,0.04);
-      padding:10px 12px;
-      border-radius:10px;
-      color:var(--card);
-      flex:1;
-      font-size:14px;
-    }
+    .settings-row{ display:flex; gap:8px; align-items:center; width:100%; margin-top:12px }
+    .input{ background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.04); padding:10px 12px; border-radius:10px; color:var(--card); flex:1; font-size:14px; }
 
-    .log{
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:10px;
-      padding:12px;
-      font-family:var(--mono);
-      font-size:12px;
-      color:#cbd6e8;
-      max-height:260px;
-      overflow:auto;
-      border:1px solid rgba(255,255,255,0.03);
-    }
+    .log{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:10px; padding:12px; font-family:var(--mono); font-size:12px; color:#cbd6e8; max-height:260px; overflow:auto; border:1px solid rgba(255,255,255,0.03); }
     .log .line{ padding:6px 8px; border-radius:8px; margin-bottom:6px; white-space:pre-wrap; }
     .log .info{ background: rgba(108,124,255,0.06); color:#dfe6ff; }
     .log .ok{ background: rgba(40,199,111,0.05); color:#bff2d0; }
@@ -191,7 +75,6 @@
 
     .muted{ color:var(--muted); font-size:13px }
     .kbd{ background:rgba(255,255,255,0.03); padding:4px 8px; border-radius:6px; font-weight:700; font-size:12px; }
-    .footer-note{ color:var(--muted); font-size:13px; text-align:center; margin-top:8px }
   </style>
 </head>
 <body>
@@ -238,7 +121,7 @@
       </div>
 
       <div style="width:100%;padding-top:10px">
-        <div class="footer-note">Server: <span id="serverHostText" class="muted">not set</span></div>
+        <div class="muted">Server: <span id="serverHostText" class="muted">not set</span></div>
       </div>
     </section>
 
@@ -286,28 +169,9 @@
   <div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
 
 <script>
-  // ---- Utilities ----
+  // Robust sender client (fixed QR-loading issues)
   const logEl = document.getElementById('log');
   const toastWrap = document.getElementById('toastWrap');
-  function addLog(text, level='info'){
-    const line = document.createElement('div');
-    line.className = 'line ' + (level==='info'? 'info' : level==='ok' ? 'ok' : level==='warn' ? 'warn' : 'err');
-    const time = new Date().toLocaleTimeString();
-    line.textContent = `[${time}] ${text}`;
-    logEl.appendChild(line);
-    logEl.scrollTop = logEl.scrollHeight;
-  }
-  function toast(msg, ttl=3500){
-    const t = document.createElement('div');
-    t.className = 'toast';
-    t.textContent = msg;
-    toastWrap.appendChild(t);
-    setTimeout(()=> t.style.opacity = '0.02', ttl-250);
-    setTimeout(()=> t.remove(), ttl);
-  }
-  function setServerHostText(txt){ document.getElementById('serverHostText').textContent = txt || 'not set' }
-
-  // ---- Elements ----
   const qrImg = document.getElementById('qrImg');
   const qrPlaceholder = document.getElementById('qrPlaceholder');
   const receiverUrlEl = document.getElementById('receiverUrl');
@@ -325,8 +189,27 @@
   const manualHost = document.getElementById('manualHost');
   const applyHostBtn = document.getElementById('applyHostBtn');
   const clearLogsBtn = document.getElementById('clearLogsBtn');
+  const serverHostText = document.getElementById('serverHostText');
 
-  // ---- Internal state ----
+  function addLog(text, level='info'){
+    const line = document.createElement('div');
+    line.className = 'line ' + (level==='info'? 'info' : level==='ok' ? 'ok' : level==='warn' ? 'warn' : 'err');
+    const time = new Date().toLocaleTimeString();
+    line.textContent = `[${time}] ${text}`;
+    logEl.appendChild(line);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+  function toast(msg, ttl=3500){
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    toastWrap.appendChild(t);
+    setTimeout(()=> t.style.opacity = '0.02', ttl-250);
+    setTimeout(()=> t.remove(), ttl);
+  }
+  function setServerHostText(txt){ serverHostText.textContent = txt || 'not set' }
+
+  // internal state
   let pc = null, ws = null, localStream = null;
   let baseApiHost = null, signalingUrl = null;
   let receiverCount = 0;
@@ -341,7 +224,7 @@
     }
   }
 
-  // ---- Hardened QR loader ----
+  // Try a list of possible hosts (auto-detect + fallbacks)
   async function loadQRCode(){
     qrPlaceholder.style.display = 'block';
     qrImg.style.display = 'none';
@@ -349,61 +232,58 @@
     openReceiverBtn.style.display = 'none';
     signalingText.textContent = 'ws: not connected';
 
-    function setHost(h){
-      baseApiHost = (h || '').replace(/\/+$/, '');
-      setServerHostText(baseApiHost);
-    }
+    // candidate hosts
+    const candidates = [];
+    const manualVal = (manualHost.value || '').trim();
+    if(manualVal) candidates.push(manualVal.startsWith('http') ? manualVal : 'http://' + manualVal);
 
-    // Build candidate hosts in order
-    const manual = (manualHost.value || '').trim();
-    const hosts = [];
-    if (manual) hosts.push(manual.startsWith('http') ? manual : 'http://' + manual);
-
+    // If page is served over HTTP(S), try same host at :8000 and origin
     try {
-      if (location.hostname && location.hostname !== '') {
-        const proto = location.protocol === 'https:' ? 'https:' : 'http:';
-        hosts.push(`${proto}//${location.hostname}:8000`);
+      if(location.hostname && location.hostname !== ''){
+        // try with explicit :8000 (common server port)
+        candidates.push(location.protocol + '//' + location.hostname + ':8000');
+        // try exact origin too
+        candidates.push(location.origin);
       }
-    } catch(e){ /* ignore */ }
+    } catch(e){}
 
-    hosts.push('http://localhost:8000');
+    // final fallback to localhost
+    candidates.push('http://localhost:8000');
 
-    addLog('Trying hosts: ' + hosts.join(', '), 'info');
+    addLog('Trying to load QR from: ' + candidates.join(' , '), 'info');
 
-    let lastErr = null;
-    for (const host of hosts){
-      setHost(host);
+    let lastError = null;
+
+    for(const c of candidates){
+      const host = c.replace(/\/+$/, '');
+      baseApiHost = host;
+      setServerHostText(baseApiHost);
       const url = baseApiHost + '/api/qr';
-      addLog('Attempting: ' + url, 'info');
+      addLog('Fetching ' + url, 'info');
+
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(()=> controller.abort(), 9000);
-        const resp = await fetch(url, { signal: controller.signal, headers:{ Accept:'application/json' }});
-        clearTimeout(timeoutId);
+        const timeout = setTimeout(()=> controller.abort(), 9000);
+        const resp = await fetch(url, { signal: controller.signal, headers: { Accept: 'application/json' } });
+        clearTimeout(timeout);
 
-        if (!resp.ok){
-          const body = await resp.text().catch(()=>'<no-body>');
-          addLog(`HTTP ${resp.status} from ${host} — body: ${body}`, 'err');
-          lastErr = new Error('HTTP ' + resp.status);
+        if(!resp.ok){
+          addLog('HTTP ' + resp.status + ' from ' + host, 'warn');
+          lastError = new Error('HTTP ' + resp.status);
           continue;
         }
 
-        const data = await resp.json().catch(e=>{
-          addLog('Invalid JSON from ' + host + ' — ' + (e.message||e), 'err');
-          lastErr = e;
-          return null;
-        });
-        if (!data) continue;
+        const data = await resp.json().catch(e => { addLog('Invalid JSON from ' + host, 'err'); lastError = e; return null; });
+        if(!data) continue;
 
-        if (data.qr_code && data.url){
+        if(data.qr_code && data.url){
           qrImg.src = 'data:image/png;base64,' + data.qr_code;
           qrImg.style.display = 'block';
           qrPlaceholder.style.display = 'none';
           receiverUrlEl.textContent = data.url;
           openReceiverBtn.style.display = 'inline-block';
-          addLog('QR loaded from ' + host + ' — url: ' + data.url, 'ok');
+          addLog('QR loaded from ' + host + ' — ' + data.url, 'ok');
 
-          // compute signaling url
           try {
             const tmp = new URL(baseApiHost);
             signalingUrl = (tmp.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + tmp.host + '/ws';
@@ -412,104 +292,94 @@
             signalingText.textContent = 'ws: not set';
           }
 
-          toast('QR loaded successfully');
+          // image error fallback (in case base64 was invalid)
+          qrImg.onerror = () => {
+            addLog('QR image failed to load, using text link fallback', 'warn');
+            qrPlaceholder.textContent = 'QR image failed to render — use the link below';
+            qrPlaceholder.style.display = 'block';
+            qrImg.style.display = 'none';
+          };
+
+          toast('QR loaded');
           return;
         } else {
-          addLog('Response missing qr_code/url from ' + host, 'warn');
-          lastErr = new Error('missing qr_code/url');
+          addLog('No qr_code/url in response from ' + host, 'warn');
+          lastError = new Error('missing qr data');
           continue;
         }
-      } catch (e) {
-        if (e.name === 'AbortError'){
-          addLog('Request to ' + host + ' timed out', 'warn');
-          lastErr = e;
+      } catch(e) {
+        if(e.name === 'AbortError'){
+          addLog('Timeout fetching ' + host, 'warn');
         } else {
           addLog('Fetch error for ' + host + ': ' + (e.message || e), 'err');
-          lastErr = e;
         }
+        lastError = e;
         continue;
       }
     }
 
-    // All attempts failed
-    qrPlaceholder.textContent = '❌ Could not load QR. See logs for details.';
-    toast('Failed to load QR — check server, firewall, or network');
-    addLog('Troubleshoot: 1) Run server: uvicorn server:app --host 0.0.0.0 --port 8000; 2) Allow port 8000 in firewall; 3) If using hotspot ensure clients can talk', 'warn');
-    if (lastErr) console.warn('Last QR load error:', lastErr);
+    // if we reach here, all attempts failed
+    qrPlaceholder.textContent = '❌ Could not load QR. Check that the Python server is running on port 8000 and that firewall allows connections.';
+    toast('Failed to load QR — check server or try Manual host', 4000);
+    addLog('All QR attempts failed; last error: ' + (lastError && lastError.message ? lastError.message : '<none>'), 'err');
   }
 
-  // ---- copy / share / open ----
+  // copy/share/open
   copyBtn.onclick = async () => {
     const url = receiverUrlEl.textContent;
-    if (!url || url === '—') { toast('No link available'); return; }
+    if(!url || url === '—'){ toast('No link available'); return; }
     try {
       await navigator.clipboard.writeText(url);
-      addLog('Link copied to clipboard', 'ok');
-      toast('Copied link');
-    } catch(e){
-      addLog('Clipboard copy failed: ' + (e.message||e), 'warn');
-      toast('Copy failed');
-    }
+      addLog('Link copied', 'ok'); toast('Copied link');
+    } catch(e){ addLog('Copy failed: ' + e.message, 'warn'); toast('Copy failed'); }
   };
+
   shareBtn.onclick = async () => {
     const url = receiverUrlEl.textContent;
-    if (!url || url === '—') { toast('No link available'); return; }
-    if (navigator.share){
-      try {
-        await navigator.share({ title:'LAN Audio Receiver', url });
-        addLog('Shared link via native share', 'ok');
-      } catch(e){ addLog('Share canceled or failed', 'warn') }
+    if(!url || url === '—'){ toast('No link available'); return; }
+    if(navigator.share){
+      try { await navigator.share({ title: 'LAN Audio Receiver', url }); addLog('Shared (native)', 'ok'); }
+      catch(e){ addLog('Share cancelled/failed', 'warn'); }
     } else {
-      try {
-        await navigator.clipboard.writeText(url);
-        toast('Link copied (share unavailable)');
-        addLog('Share API unavailable — copied to clipboard', 'warn');
-      } catch(e){ toast('Share & copy failed') }
+      try { await navigator.clipboard.writeText(url); toast('Copied link (share unavailable)'); addLog('Share unavailable — copied', 'warn'); }
+      catch(e){ toast('Share & copy failed'); }
     }
   };
+
   openReceiverBtn.onclick = () => {
     const url = receiverUrlEl.textContent;
-    if (!url || url === '—') { toast('No link available'); return; }
+    if(!url || url === '—'){ toast('No link available'); return; }
     window.open(url, '_blank');
   };
 
-  // ---- settings toggle/apply ----
-  toggleSettings.onclick = () => {
-    settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'block' : 'none';
-  };
+  // settings toggle and apply host
+  toggleSettings.onclick = () => settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'block' : 'none';
   applyHostBtn.onclick = () => {
-    addLog('Manual host applied: ' + (manualHost.value || '<empty>'), 'info');
+    addLog('Manual host set to: ' + (manualHost.value || '<empty>'), 'info');
     loadQRCode();
   };
 
-  // ---- Start / Stop / WebRTC (unchanged) ----
+  // WebRTC signaling helpers (as in your working code)
   function makeWS(onOpen){
-    if (!signalingUrl){
-      addLog('Signaling URL not set — cannot create WS', 'warn');
-      return null;
-    }
+    if(!signalingUrl){ addLog('Signaling URL not set', 'warn'); return null; }
     try {
       const s = new WebSocket(signalingUrl);
-      s.onopen = () => { addLog('WebSocket connected to ' + signalingUrl, 'ok'); if (onOpen) onOpen(); s.send(JSON.stringify({ type:'sender' })); };
+      s.onopen = () => { addLog('WebSocket connected to ' + signalingUrl, 'ok'); if(onOpen) onOpen(); s.send(JSON.stringify({ type:'sender' })); };
       s.onmessage = async (evt) => {
-        if (typeof evt.data !== 'string') return;
+        if(typeof evt.data !== 'string') return;
         try {
           const data = JSON.parse(evt.data);
-          if (data.type === 'receiver_joined'){
+          if(data.type === 'receiver_joined'){
             addLog('Receiver joined — creating offer', 'info');
-            if (!localStream){ addLog('No local stream — start streaming first', 'warn'); return; }
+            if(!localStream){ addLog('No local stream', 'warn'); return; }
             await createOffer();
-          } else if (data.type === 'answer'){
-            if (!pc){ addLog('Answer received but PC not initialized', 'warn'); return; }
+          } else if(data.type === 'answer'){
+            if(!pc){ addLog('Answer received but PC not initialized', 'warn'); return; }
             addLog('Received answer', 'ok');
             await pc.setRemoteDescription({ type:'answer', sdp: data.sdp });
             addLog('Remote description set', 'ok');
-          } else if (data.type === 'ice' && data.candidate && pc){
+          } else if(data.type === 'ice' && data.candidate && pc){
             try { await pc.addIceCandidate(data.candidate); addLog('Added remote ICE candidate', 'ok'); } catch(e){ addLog('ICE add error: ' + (e.message||e), 'warn'); }
-          } else if (data.type === 'ok') {
-            // server acknowledgements
-          } else {
-            addLog('WS message: ' + JSON.stringify(data), 'info');
           }
         } catch(e){
           addLog('WS parse error: ' + (e.message||e), 'warn');
@@ -525,22 +395,23 @@
   }
 
   async function createOffer(){
-    if (!pc || !localStream){ addLog('Cannot create offer — missing pc/stream', 'warn'); return; }
+    if(!pc || !localStream){ addLog('Cannot create offer — missing pc/stream', 'warn'); return; }
     try {
       const audioTracks = localStream.getAudioTracks();
-      if (audioTracks.length === 0) { addLog('No audio tracks present', 'warn'); return; }
+      if(audioTracks.length === 0){ addLog('No audio tracks present', 'warn'); return; }
       const existing = pc.getSenders().map(s => s.track?.id).filter(Boolean);
-      audioTracks.forEach(t => { if (!existing.includes(t.id)) pc.addTrack(t, localStream); });
+      audioTracks.forEach(t => { if(!existing.includes(t.id)) pc.addTrack(t, localStream); });
 
       const offer = await pc.createOffer({ offerToReceiveAudio:false, offerToReceiveVideo:false });
       let sdp = offer.sdp;
-      if (sdp.includes('opus')){
+      if(sdp && sdp.includes('opus')){
         sdp = sdp.replace(/a=rtpmap:(\d+) opus\/48000\/2/g, 'a=rtpmap:$1 opus/48000/2\r\na=fmtp:$1 minptime=10;useinbandfec=1;stereo=1;maxaveragebitrate=510000');
-        if (!sdp.includes('b=AS:')) sdp = sdp.replace(/m=audio \d+ RTP\/SAVPF/g, 'm=audio 9 RTP/SAVPF\r\nb=AS:510');
+        if(!sdp.includes('b=AS:')) sdp = sdp.replace(/m=audio \d+ RTP\/SAVPF/g, 'm=audio 9 RTP/SAVPF\r\nb=AS:510');
       }
+
       await pc.setLocalDescription({ type: offer.type, sdp });
       addLog('Local description set — sending offer', 'info');
-      if (ws && ws.readyState === WebSocket.OPEN){
+      if(ws && ws.readyState === WebSocket.OPEN){
         ws.send(JSON.stringify({ type:'offer', sdp: pc.localDescription.sdp, id:null }));
         addLog('Offer sent', 'ok');
       } else addLog('WebSocket not open — cannot send offer', 'warn');
@@ -549,26 +420,30 @@
     }
   }
 
+  // Start & Stop streaming
   startBtn.onclick = async () => {
     try {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+      if(!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia){
         alert('getDisplayMedia not supported — use Chrome/Edge/Firefox');
         addLog('getDisplayMedia unsupported', 'err');
         return;
       }
-      addLog('Requesting system audio — please enable "Share audio" in the prompt', 'info');
+      addLog('Requesting system audio — select "Share audio"', 'info');
+
       const constraints = { video:{ displaySurface: "browser" }, audio:{ echoCancellation:false, noiseSuppression:false, autoGainControl:false, sampleRate:48000, channelCount:2 } };
       localStream = await navigator.mediaDevices.getDisplayMedia(constraints);
       addLog('Media stream acquired', 'ok');
 
+      // stop video tracks to only stream audio
       localStream.getVideoTracks().forEach(t => { t.stop(); addLog('Stopped video track', 'info'); });
 
       pc = new RTCPeerConnection({ iceServers:[{ urls:'stun:stun.l.google.com:19302' }], sdpSemantics:'unified-plan' });
-      pc.onicecandidate = (e) => { if (e.candidate && ws && ws.readyState === WebSocket.OPEN) { ws.send(JSON.stringify({ type:'ice', candidate: e.candidate })); addLog('Local ICE candidate sent', 'info'); } };
+      pc.onicecandidate = (e) => { if(e.candidate && ws && ws.readyState === WebSocket.OPEN) { ws.send(JSON.stringify({ type:'ice', candidate: e.candidate })); addLog('Local ICE candidate sent', 'info'); } };
       pc.onconnectionstatechange = () => addLog('PC connection: ' + pc.connectionState + ' — ICE: ' + pc.iceConnectionState, 'info');
 
-      if (!signalingUrl){
-        try { const tmp = new URL(baseApiHost || 'http://localhost:8000'); signalingUrl = (tmp.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + tmp.host + '/ws'; signalingText.textContent = 'ws: ' + signalingUrl; } catch(e){}
+      // ensure signalingUrl exists (from QR fetch) — if not, try default derivation
+      if(!signalingUrl && baseApiHost){
+        try { const tmp = new URL(baseApiHost); signalingUrl = (tmp.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + tmp.host + '/ws'; signalingText.textContent = 'ws: ' + signalingUrl; } catch(e){}
       }
       ws = makeWS(()=> addLog('Signaling ready', 'ok'));
       setStatus(true);
@@ -577,42 +452,40 @@
     } catch(e){
       addLog('Start error: ' + (e.message||e), 'err');
       toast('Failed to start: ' + (e.message||e));
-      if (localStream){ localStream.getTracks().forEach(t=>t.stop()); localStream = null; }
+      if(localStream){ localStream.getTracks().forEach(t=>t.stop()); localStream = null; }
     }
   };
 
   function stopStreaming(){
-    if (localStream){ localStream.getTracks().forEach(t => { t.stop(); addLog('Stopped track ' + (t.label||t.id), 'info') }); localStream = null; }
-    if (pc){ try{ pc.close(); addLog('Closed RTCPeerConnection','info') } catch(e){} pc = null; }
-    if (ws){ try{ ws.close(); addLog('Closed WebSocket','info') } catch(e){} ws = null; }
+    if(localStream){ localStream.getTracks().forEach(t => { t.stop(); addLog('Stopped track ' + (t.label||t.id), 'info') }); localStream = null; }
+    if(pc){ try{ pc.close(); addLog('Closed RTCPeerConnection','info') } catch(e){} pc = null; }
+    if(ws){ try{ ws.close(); addLog('Closed WebSocket','info') } catch(e){} ws = null; }
     setStatus(false);
     startBtn.disabled = false; stopBtn.disabled = true;
     toast('Streaming stopped');
   }
   stopBtn.onclick = stopStreaming;
 
-  // ---- other buttons ----
+  // other buttons
   refreshQRBtn.onclick = () => { loadQRCode(); toast('Refreshing QR...'); };
   clearLogsBtn.onclick = () => { logEl.innerHTML = ''; addLog('Logs cleared', 'info'); };
 
-  // ---- keyboard shortcuts ----
+  // keyboard shortcuts
   window.addEventListener('keydown', (e) => {
     if (e.key === 's' || e.key === 'S') startBtn.click();
     if (e.key === 'x' || e.key === 'X') stopBtn.click();
     if (e.key === 'r' || e.key === 'R') refreshQRBtn.click();
   });
 
-  // ---- UI bootstrap ----
+  // bootstrap
   document.addEventListener('DOMContentLoaded', () => {
     loadQRCode();
     addLog('UI ready — press S to start streaming', 'info');
     addLog('If using file://, apply manual host and press Refresh', 'info');
   });
 
-  function setReceiverCount(n){
-    receiverCount = n;
-    receiversCount.textContent = (n||0) + ' connected';
-  }
+  // expose setReceiverCount for server-driven updates
+  function setReceiverCount(n){ receiverCount = n; receiversCount.textContent = (n||0) + ' connected'; }
   window.setReceiverCount = setReceiverCount;
 </script>
 </body>
