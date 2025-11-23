@@ -191,6 +191,9 @@
   const clearLogsBtn = document.getElementById('clearLogsBtn');
   const serverHostText = document.getElementById('serverHostText');
 
+  // Target audio bitrate (bps)
+  const TARGET_BITRATE = 256000;
+
   function addLog(text, level='info'){
     const line = document.createElement('div');
     line.className = 'line ' + (level==='info'? 'info' : level==='ok' ? 'ok' : level==='warn' ? 'warn' : 'err');
@@ -198,6 +201,7 @@
     line.textContent = `[${time}] ${text}`;
     logEl.appendChild(line);
     logEl.scrollTop = logEl.scrollHeight;
+    console.log(text);
   }
   function toast(msg, ttl=3500){
     const t = document.createElement('div');
@@ -359,7 +363,81 @@
     loadQRCode();
   };
 
-  // WebRTC signaling helpers (as in your working code)
+  // ----------------------
+  // SDP & Sender helpers
+  // ----------------------
+  function preferOpusStereoAndSetBitrate(sdp, targetBps = TARGET_BITRATE){
+    const lines = sdp.split('\r\n');
+    let opusPayload = null;
+    for(let i=0;i<lines.length;i++){
+      const m = lines[i].match(/^a=rtpmap:(\d+) opus\/48000/i);
+      if(m){ opusPayload = m[1]; break; }
+    }
+    if(!opusPayload) return sdp;
+
+    // add/extend fmtp params
+    let fmtpIndex = -1;
+    for(let i=0;i<lines.length;i++){
+      if(lines[i].startsWith('a=fmtp:' + opusPayload)) { fmtpIndex = i; break; }
+    }
+    const extra = `stereo=1;sprop-stereo=1;maxaveragebitrate=${targetBps};useinbandfec=1;minptime=10`;
+    if(fmtpIndex !== -1){
+      if(!lines[fmtpIndex].includes('stereo=1')) lines[fmtpIndex] = lines[fmtpIndex] + ';' + extra;
+    } else {
+      for(let i=0;i<lines.length;i++){
+        if(lines[i].startsWith('a=rtpmap:' + opusPayload)){
+          lines.splice(i+1, 0, `a=fmtp:${opusPayload} ${extra}`);
+          break;
+        }
+      }
+    }
+
+    // prefer opus in m=audio line
+    for(let i=0;i<lines.length;i++){
+      if(lines[i].startsWith('m=audio ')){
+        const parts = lines[i].split(' ');
+        const header = parts.slice(0,3);
+        const payloads = parts.slice(3).filter(p => p !== opusPayload);
+        lines[i] = header.concat([opusPayload]).concat(payloads).join(' ');
+        break;
+      }
+    }
+
+    // add bandwidth hint (if missing) — browsers may ignore but it's okay
+    for(let i=0;i<lines.length;i++){
+      if(lines[i].startsWith('m=audio ')){
+        // insert a b=AS line after the m=audio line if not present
+        if(!lines[i+1] || !lines[i+1].startsWith('b=AS:')){
+          lines.splice(i+1, 0, `b=AS:${Math.ceil(targetBps/1000)}`); // kbps
+        }
+        break;
+      }
+    }
+
+    return lines.join('\r\n');
+  }
+
+  async function bumpSenderBitrate(pc, targetBps = TARGET_BITRATE) {
+    try {
+      const senders = pc.getSenders();
+      for (const sender of senders) {
+        if (sender.track && sender.track.kind === 'audio') {
+          const params = sender.getParameters();
+          if (!params.encodings || params.encodings.length === 0) params.encodings = [{}];
+          // set max bitrate (some browsers honor maxBitrate)
+          params.encodings[0].maxBitrate = targetBps;
+          // enable stereo if possible (this is a hint)
+          params.encodings[0].channels = 2;
+          await sender.setParameters(params);
+          addLog('Set RTCRtpSender parameters: ' + JSON.stringify(params), 'ok');
+        }
+      }
+    } catch (e) {
+      addLog('Failed to set sender parameters: ' + (e.message || e), 'warn');
+    }
+  }
+
+  // WebSocket signaling helpers (as in your working code)
   function makeWS(onOpen){
     if(!signalingUrl){ addLog('Signaling URL not set', 'warn'); return null; }
     try {
@@ -403,14 +481,19 @@
       audioTracks.forEach(t => { if(!existing.includes(t.id)) pc.addTrack(t, localStream); });
 
       const offer = await pc.createOffer({ offerToReceiveAudio:false, offerToReceiveVideo:false });
-      let sdp = offer.sdp;
+      let sdp = offer.sdp || '';
       if(sdp && sdp.includes('opus')){
-        sdp = sdp.replace(/a=rtpmap:(\d+) opus\/48000\/2/g, 'a=rtpmap:$1 opus/48000/2\r\na=fmtp:$1 minptime=10;useinbandfec=1;stereo=1;maxaveragebitrate=510000');
-        if(!sdp.includes('b=AS:')) sdp = sdp.replace(/m=audio \d+ RTP\/SAVPF/g, 'm=audio 9 RTP/SAVPF\r\nb=AS:510');
+        // prefer opus stereo + set bitrate using our helper
+        sdp = preferOpusStereoAndSetBitrate(sdp, TARGET_BITRATE);
       }
-
+      // set local description with modified sdp
       await pc.setLocalDescription({ type: offer.type, sdp });
-      addLog('Local description set — sending offer', 'info');
+      addLog('Local description set (with Opus prefs) — bumping sender params', 'info');
+
+      // try to set RTCRtpSender params (some browsers honor this)
+      await bumpSenderBitrate(pc, TARGET_BITRATE);
+
+      // send the offer's final localDescription.sdp (which may be normalized by browser)
       if(ws && ws.readyState === WebSocket.OPEN){
         ws.send(JSON.stringify({ type:'offer', sdp: pc.localDescription.sdp, id:null }));
         addLog('Offer sent', 'ok');
@@ -430,12 +513,29 @@
       }
       addLog('Requesting system audio — select "Share audio"', 'info');
 
-      const constraints = { video:{ displaySurface: "browser" }, audio:{ echoCancellation:false, noiseSuppression:false, autoGainControl:false, sampleRate:48000, channelCount:2 } };
+      // High-quality capture constraints for system audio via getDisplayMedia.
+      // sampleRate / sampleSize / channelCount are hints — the browser/device may change them.
+      const constraints = {
+        video: { displaySurface: "browser" },
+        audio: {
+          echoCancellation:false,
+          noiseSuppression:false,
+          autoGainControl:false,
+          sampleRate:48000,
+          sampleSize:16,
+          channelCount:2
+        }
+      };
+
       localStream = await navigator.mediaDevices.getDisplayMedia(constraints);
       addLog('Media stream acquired', 'ok');
 
-      // stop video tracks to only stream audio
+      // Stop video tracks (we only want audio)
       localStream.getVideoTracks().forEach(t => { t.stop(); addLog('Stopped video track', 'info'); });
+
+      // Log actual negotiated settings
+      const at = localStream.getAudioTracks()[0];
+      try { addLog('Track settings: ' + JSON.stringify(at.getSettings()), 'info'); } catch(e){}
 
       pc = new RTCPeerConnection({ iceServers:[{ urls:'stun:stun.l.google.com:19302' }], sdpSemantics:'unified-plan' });
       pc.onicecandidate = (e) => { if(e.candidate && ws && ws.readyState === WebSocket.OPEN) { ws.send(JSON.stringify({ type:'ice', candidate: e.candidate })); addLog('Local ICE candidate sent', 'info'); } };
