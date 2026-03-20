@@ -1,10 +1,3 @@
-# server_fastapi.py
-# Corrected: do NOT mount StaticFiles at "/", so WebSocket /ws won't be handed to StaticFiles.
-# Usage:
-#   pip install fastapi uvicorn qrcode[pil]
-#   python server_fastapi.py
-#
-# Put sender.html and receiver.html inside ./www/
 
 import os
 import socket

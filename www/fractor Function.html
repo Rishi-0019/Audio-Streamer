@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <script>
+    //Constructor Function
+    
+    function Movie(title, year){
+        const movieObj={
+            title: title,
+            year: year,
+            getDetails(){
+                 console.log(`
+                 title: ${this.title}
+                 Year: ${this.year}
+                 `);
+            },
+        };
+        return movieObj;
+    }
+    const movie1= Movie('The Avengers', 2012);
+    console.log(movie1);
+    movie1.getDetails();
+    
+    const movie2 = Movie('Inception', 2010);
+    console.log(movie2);
+    movie2.getDetails();
+    
+    
+    </script>
+</body>
+</html>
