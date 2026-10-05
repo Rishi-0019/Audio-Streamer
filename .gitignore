@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+
+# Node.js
+node_modules/
+
+
+# Logs
+*.log
+
+# Editor and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

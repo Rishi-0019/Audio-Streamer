@@ -191,7 +191,7 @@
   const clearLogsBtn = document.getElementById('clearLogsBtn');
   const serverHostText = document.getElementById('serverHostText');
 
-  // Target audio bitrate (bps)
+  //Target audio bitrate(bps)
   const TARGET_BITRATE = 320000;
 
   function addLog(text, level='info'){
@@ -228,7 +228,7 @@
     }
   }
 
-  // Try a list of possible hosts (auto-detect + fallb[acks)
+  
   async function loadQRCode(){
     qrPlaceholder.style.display = 'block';
     qrImg.style.display = 'none';
@@ -241,7 +241,7 @@
     const manualVal = (manualHost.value || '').trim();
     if(manualVal) candidates.push(manualVal.startsWith('http') ? manualVal : 'http://' + manualVal);
 
-    // If page is served over HTTP(S), try same host at :8000 and origin
+    //if page is served over HTTP(S), try same host at :8000 and origin
     try {
       if(location.hostname && location.hostname !== ''){
         // try with explicit :8000 (common server port)
@@ -251,7 +251,7 @@
       }
     } catch(e){}
 
-    // final fallback to localhost
+    //final fallback to localhost
     candidates.push('http://localhost:8000');
 
     addLog('Trying to load QR from: ' + candidates.join(' , '), 'info');
