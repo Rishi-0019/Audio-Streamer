@@ -192,7 +192,7 @@
   const serverHostText = document.getElementById('serverHostText');
 
   // Target audio bitrate (bps)
-  const TARGET_BITRATE = 256000;
+  const TARGET_BITRATE = 320000;
 
   function addLog(text, level='info'){
     const line = document.createElement('div');
@@ -228,7 +228,7 @@
     }
   }
 
-  // Try a list of possible hosts (auto-detect + fallbacks)
+  // Try a list of possible hosts (auto-detect + fallb[acks)
   async function loadQRCode(){
     qrPlaceholder.style.display = 'block';
     qrImg.style.display = 'none';
@@ -380,7 +380,13 @@
     for(let i=0;i<lines.length;i++){
       if(lines[i].startsWith('a=fmtp:' + opusPayload)) { fmtpIndex = i; break; }
     }
-    const extra = `stereo=1;sprop-stereo=1;maxaveragebitrate=${targetBps};useinbandfec=1;minptime=10`;
+    //const extra = `stereo=1;sprop-stereo=1;maxaveragebitrate=${targetBps};useinbandfec=1;minptime=10`;
+    const extra =
+    `stereo=1;` +
+    `sprop-stereo=1;` +
+    `maxaveragebitrate=${targetBps};` +
+    `useinbandfec=1;` +
+    `minptime=10`;
     if(fmtpIndex !== -1){
       if(!lines[fmtpIndex].includes('stereo=1')) lines[fmtpIndex] = lines[fmtpIndex] + ';' + extra;
     } else {

@@ -299,16 +299,27 @@ function preparePeerConnection(){
     sdpSemantics: 'unified-plan'
   });
 
-  pc.ontrack = (e) => {
-    // prefer streams if provided
-    if(e.streams && e.streams[0]){
-      audioPlayer.srcObject = e.streams[0];
-    } else if(e.track){
-      audioPlayer.srcObject = new MediaStream([e.track]);
+  pc.ontrack = async (e) => {
+    console.log("Remote audio track received:", e.track);
+
+    if (e.streams && e.streams[0]) {
+        audioPlayer.srcObject = e.streams[0];
+    } else if (e.track) {
+        audioPlayer.srcObject = new MediaStream([e.track]);
     }
+
     audioContainer.style.display = 'block';
     updateStatus('connected');
-  };
+
+    try {
+        await audioPlayer.play();
+        console.log("Audio playback started");
+        showToast("🔊 Audio playing", 2000);
+    } catch (err) {
+        console.warn("Autoplay blocked:", err);
+        showToast("Tap the Play button to start audio", 4000);
+    }
+};
 
   pc.onicecandidate = (e) => {
     if(e.candidate && ws && ws.readyState === WebSocket.OPEN){
